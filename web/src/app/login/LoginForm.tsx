@@ -71,9 +71,9 @@ export default function LoginForm({ defaultEmail, defaultRemember }: Props) {
       </div>
 
       <div className="pb-[18px]">
-        <div className="mb-3.5 flex items-center justify-center">
+        <div className="mb-3.5 flex items-center justify-center gap-1">
           <span className="text-[13px] text-[#8B8B8B]">
-            Ainda não tem uma conta?{" "}
+            Ainda não tem uma conta?
           </span>
           <Link
             href="/register"
