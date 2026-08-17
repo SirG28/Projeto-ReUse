@@ -14,7 +14,9 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 | Cadastro | `/register` | Criação de conta, com autopreenchimento de cidade/estado via ViaCEP a partir do CEP |
 | Home / Feed | `/home` | Resumo do usuário (itens publicados, XP) e feed de itens de outros usuários disponíveis para troca |
 | Publicar Item | `/items/new` | Formulário para publicar um novo item para troca |
-| Perfil | `/profile` | Dados da conta autenticada e logout |
+| Meus Itens | `/items/mine` | Lista os itens publicados pelo próprio usuário, com opções de editar ou excluir cada um |
+| Perfil | `/profile` | Dados da conta autenticada, acesso a "Meus Itens" e logout |
+| Dicas Sustentáveis | `/tips` | Lista de notícias/artigos sobre sustentabilidade e reuso, consumidos de uma fonte externa |
 
 `/login`, `/register` e `/` são públicas; as demais exigem sessão válida (redirecionam para `/login` caso contrário).
 
@@ -28,6 +30,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 | Login | `prisma.user.findUnique` por e-mail + `prisma.session.create` (sessão no banco, referenciada por cookie `httpOnly`) |
 | Home/Feed | `prisma.item.findMany` (itens de outros usuários, mais recentes primeiro) + `prisma.item.count` (itens do próprio usuário, usado no card de resumo) |
 | Publicar Item | `prisma.item.create` vinculado ao usuário da sessão |
+| Meus Itens | `prisma.item.findMany` (itens do próprio usuário) + `prisma.item.update` / `prisma.item.delete` (edição e exclusão, sempre validando que o item pertence ao usuário da sessão) |
 | Perfil | Leitura do usuário via sessão (`prisma.session.findUnique` com `include: { user: true }`) |
 | Logout | `prisma.session.deleteMany` (invalida a sessão no banco) |
 
@@ -108,8 +111,3 @@ Cada uma tem itens publicados visíveis no feed da outra.
 npx prisma studio
 ```
 
----
-
-## 📌 Fora do escopo desta fase
-
-As telas **Dicas Sustentáveis** e **Meus Itens** do mobile não foram replicadas na web — o foco foi o núcleo de autenticação + CRUD de itens, que já cobre os 3 critérios de avaliação (NextJS, Prisma ORM e banco de dados) sem duplicar o app inteiro.
