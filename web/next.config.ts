@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname),
   },
+  experimental: {
+    serverActions: {
+      // Padrão do Next é 1MB. A Vercel tem um teto rígido de 4.5MB por
+      // requisição (Node.js runtime) — mantemos margem abaixo disso mesmo
+      // com a foto já comprimida no navegador antes de enviar.
+      bodySizeLimit: "4mb",
+    },
+  },
 };
 
 export default nextConfig;
