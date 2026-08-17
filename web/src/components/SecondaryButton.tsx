@@ -13,7 +13,7 @@ export default function SecondaryButton({
   return (
     <button
       type={type}
-      className={`w-full rounded-xl border border-reuse-green-dark py-3 text-lg font-bold text-reuse-green-dark transition-opacity disabled:opacity-60 ${className}`}
+      className={`w-full rounded-xl border border-reuse-green-dark py-3 text-lg font-bold text-reuse-green-dark transition duration-150 active:scale-[0.97] disabled:opacity-60 ${className}`}
       {...rest}
     >
       {children}

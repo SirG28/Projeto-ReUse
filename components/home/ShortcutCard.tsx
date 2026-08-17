@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import AnimatedPressable from "../ui/AnimatedPressable";
 
 type Props = {
     title: string;
@@ -10,14 +11,14 @@ type Props = {
 
 export default function ShortcutCard({ title, xp, icon, onPress }: Props) {
     return (
-        <Pressable style={styles.card} onPress={onPress}>
+        <AnimatedPressable style={styles.card} onPress={onPress}>
             <View style={styles.iconCircle}>
                 <Text style={styles.icon}>{icon}</Text>
             </View>
 
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.xp}>{xp}</Text>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 

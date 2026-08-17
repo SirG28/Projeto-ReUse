@@ -1,13 +1,28 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 
 export default function UserSummaryCard() {
     const [totalItens, setTotalItens] = useState(0);
     const router = useRouter();
     const [pontos, setPontos] = useState(0);
+
+    const progressPct = Math.min((pontos / 1500) * 100, 100);
+    const progress = useSharedValue(0);
+
+    useEffect(() => {
+        progress.value = withTiming(progressPct, { duration: 600 });
+    }, [progressPct, progress]);
+
+    const animatedFillStyle = useAnimatedStyle(() => ({
+        width: `${progress.value}%`,
+    }));
 
     useFocusEffect(
         React.useCallback(() => {
@@ -50,7 +65,7 @@ export default function UserSummaryCard() {
                     <Text style={styles.progressText}>{Math.min(Math.round((pontos / 1500) * 100), 100)}%</Text>
                 </View>
                 <View style={styles.progressBarBackground}>
-                    <View style={[styles.progressBarFill, { width: `${Math.min((pontos / 1500) * 100, 100)}%` }]} />
+                    <Animated.View style={[styles.progressBarFill, animatedFillStyle]} />
                 </View>
             </View>
 
@@ -167,7 +182,6 @@ const styles = StyleSheet.create({
     },
 
     progressBarFill: {
-        width: "3%",
         height: "100%",
         backgroundColor: "#7AA61C",
         borderRadius: 999,

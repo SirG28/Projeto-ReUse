@@ -22,7 +22,7 @@ function CardContent({ icon, title, xp }: { icon: ReactNode; title: string; xp: 
 
 export default function ShortcutCard({ title, xp, icon, href }: Props) {
   const className =
-    "flex w-[118px] min-h-[106px] shrink-0 flex-col justify-between rounded-xl border border-[#D9D4CB] bg-[#FBFBFA] p-3 text-left";
+    "flex w-[118px] min-h-[106px] shrink-0 flex-col justify-between rounded-xl border border-[#D9D4CB] bg-[#FBFBFA] p-3 text-left transition duration-150 active:scale-[0.97] hover:border-reuse-green";
 
   if (href) {
     return (

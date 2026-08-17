@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import { getCurrentUser, logout, User } from "../services/authService";
@@ -42,6 +43,7 @@ export default function ProfileScreen() {
 
     return (
         <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Perfil</Text>
             </View>
@@ -79,18 +81,21 @@ export default function ProfileScreen() {
                         </View>
                     ) : null}
 
-                    <View style={styles.infoRow}>
+                    <View style={[styles.infoRow, styles.infoRowLast]}>
                         <Text style={styles.infoLabel}>Sessão</Text>
                         <Text style={styles.infoValue}>Ativa</Text>
                     </View>
                 </View>
 
-                <PrimaryButton
-                    title="Meus Itens"
-                    onPress={() => router.push("/myItems")}
-                />
-                <SecondaryButton title="Sair da conta" onPress={handleLogout} />
+                <View style={styles.buttons}>
+                    <PrimaryButton
+                        title="Meus Itens"
+                        onPress={() => router.push("/myItems")}
+                    />
+                    <SecondaryButton title="Sair da conta" onPress={handleLogout} />
+                </View>
             </View>
+            </Animated.View>
             <BottomNav />
         </SafeAreaView>
     );
@@ -106,47 +111,52 @@ const styles = StyleSheet.create({
         borderBottomColor: "#E5E5E5",
     },
     headerTitle: { fontSize: 18, fontWeight: "700", color: "#2F2F2F" },
-    content: { flex: 1, padding: 20, paddingBottom: 100, gap: 8 },
+    content: {
+        flex: 1,
+        paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom: 84,
+    },
     avatar: {
-        width: 84,
-        height: 84,
-        borderRadius: 42,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         backgroundColor: "#DCE8C2",
         alignItems: "center",
         justifyContent: "center",
         alignSelf: "center",
-        marginTop: 12,
-        marginBottom: 16,
+        marginBottom: 8,
     },
-    avatarText: { fontSize: 28, fontWeight: "700", color: "#639922" },
+    avatarText: { fontSize: 24, fontWeight: "700", color: "#639922" },
     name: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "700",
         color: "#2F2F2F",
         textAlign: "center",
-        marginBottom: 4,
+        marginBottom: 2,
     },
     email: {
-        fontSize: 14,
+        fontSize: 13,
         color: "#6B6B6B",
         textAlign: "center",
-        marginBottom: 28,
+        marginBottom: 12,
     },
     card: {
         backgroundColor: "#FFFFFF",
         borderRadius: 14,
         borderWidth: 1,
         borderColor: "#E6E2D9",
-        padding: 16,
-        marginBottom: 24,
+        padding: 14,
     },
     cardTitle: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: "700",
         color: "#2F2F2F",
-        marginBottom: 14,
+        marginBottom: 8,
     },
-    infoRow: { marginBottom: 12 },
-    infoLabel: { fontSize: 13, color: "#7A7A7A", marginBottom: 2 },
-    infoValue: { fontSize: 15, color: "#2F2F2F", fontWeight: "500" },
+    infoRow: { marginBottom: 8 },
+    infoRowLast: { marginBottom: 0 },
+    infoLabel: { fontSize: 12, color: "#7A7A7A", marginBottom: 1 },
+    infoValue: { fontSize: 14, color: "#2F2F2F", fontWeight: "500" },
+    buttons: { marginTop: 16, gap: 8 },
 });

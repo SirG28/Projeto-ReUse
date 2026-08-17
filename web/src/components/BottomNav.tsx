@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItemClass =
-  "flex h-12 w-[58px] flex-col items-center justify-center gap-1 rounded-[10px]";
+  "flex h-12 w-[58px] flex-col items-center justify-center gap-1 rounded-[10px] transition-colors duration-200";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -18,8 +18,8 @@ export default function BottomNav() {
 
   function labelClass(path: string) {
     return isActive(path)
-      ? "text-[11px] font-bold text-white"
-      : "text-[11px] text-[#2F2F2F]";
+      ? "text-[11px] font-bold text-white transition-colors duration-200"
+      : "text-[11px] text-[#2F2F2F] transition-colors duration-200";
   }
 
   function iconColor(path: string) {

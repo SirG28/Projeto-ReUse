@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/auth";
 import HeaderHome from "@/components/HeaderHome";
@@ -5,6 +6,7 @@ import UserSummaryCard from "@/components/UserSummaryCard";
 import SectionHeader from "@/components/SectionHeader";
 import ShortcutCard from "@/components/ShortcutCard";
 import ItemCard from "@/components/ItemCard";
+import ToastFromQuery from "./ToastFromQuery";
 
 export default async function HomePage() {
   const user = await requireSession();
@@ -21,7 +23,11 @@ export default async function HomePage() {
   const pontos = itemCount * 50;
 
   return (
-    <div>
+    <div className="animate-page-in">
+      <Suspense fallback={null}>
+        <ToastFromQuery />
+      </Suspense>
+
       <HeaderHome pontos={pontos} />
 
       <div className="px-4 pt-3">
@@ -49,14 +55,19 @@ export default async function HomePage() {
           </div>
         ) : (
           <div className="flex gap-3 overflow-x-auto pb-1">
-            {itens.map((item) => (
-              <ItemCard
+            {itens.map((item, i) => (
+              <div
                 key={item.id}
-                imagem={item.imagem}
-                titulo={item.titulo}
-                descricao={item.descricao}
-                troca={item.troca}
-              />
+                className="animate-item-in"
+                style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
+              >
+                <ItemCard
+                  imagem={item.imagem}
+                  titulo={item.titulo}
+                  descricao={item.descricao}
+                  troca={item.troca}
+                />
+              </div>
             ))}
           </div>
         )}

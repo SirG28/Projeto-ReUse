@@ -11,14 +11,16 @@ export default async function MyItemsPage() {
   });
 
   return (
-    <MyItemsList
-      itens={itens.map((item) => ({
-        id: item.id,
-        titulo: item.titulo,
-        descricao: item.descricao,
-        troca: item.troca,
-        imagem: item.imagem,
-      }))}
-    />
+    <div className="animate-page-in">
+      <MyItemsList
+        itens={itens.map((item) => ({
+          id: item.id,
+          titulo: item.titulo,
+          descricao: item.descricao,
+          troca: item.troca,
+          imagem: item.imagem,
+        }))}
+      />
+    </div>
   );
 }

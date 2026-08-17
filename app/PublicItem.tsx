@@ -18,11 +18,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import * as Haptics from "expo-haptics";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import BottomNav from "../components/home/BottomNav";
+import { useToast } from "../components/ui/ToastProvider";
 
 export default function PublicItemScreen() {
     const router = useRouter();
+    const { showToast } = useToast();
 
     const [imagem, setImagem] = useState<string | null>(null);
     const [titulo, setTitulo] = useState("");
@@ -60,6 +63,8 @@ export default function PublicItemScreen() {
     }
 
     async function handlePublicar() {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
         if (!titulo || !descricao || !troca || !whatsapp) {
             Alert.alert(
                 "Atenção",
@@ -113,7 +118,7 @@ export default function PublicItemScreen() {
                 String(pontosAtuais + 50)
             );
 
-            Alert.alert("Sucesso", "Item publicado com sucesso!");
+            showToast("Item publicado com sucesso!");
             router.back();
         } catch (error: any) {
             console.log("Erro ao publicar:", error?.message);
@@ -231,7 +236,7 @@ export default function PublicItemScreen() {
                     <Modal
                         visible={showExitModal}
                         transparent
-                        animationType="fade"
+                        animationType="slide"
                         onRequestClose={() => setShowExitModal(false)}
                     >
                         <View style={styles.modalOverlay}>

@@ -1,4 +1,5 @@
 import BottomNav from "@/components/BottomNav";
+import { ToastProvider } from "@/components/ToastProvider";
 import { requireSession } from "@/lib/auth";
 
 export default async function ProtectedLayout({
@@ -11,9 +12,11 @@ export default async function ProtectedLayout({
   await requireSession();
 
   return (
-    <div className="min-h-screen bg-reuse-bg pb-28">
-      {children}
-      <BottomNav />
-    </div>
+    <ToastProvider>
+      <div className="min-h-screen bg-reuse-bg pb-28">
+        {children}
+        <BottomNav />
+      </div>
+    </ToastProvider>
   );
 }

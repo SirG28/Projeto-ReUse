@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { Text, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import AnimatedPressable from "./AnimatedPressable";
 
 type SecondaryButtonProps = {
     title: string;
@@ -13,9 +14,9 @@ export default function SecondaryButton({
     style,
 }: SecondaryButtonProps) {
     return (
-        <Pressable style={[styles.button, style]} onPress={onPress}>
+        <AnimatedPressable style={[styles.button, style]} onPress={onPress}>
             <Text style={styles.buttonText}>{title}</Text>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -28,6 +29,7 @@ const styles = StyleSheet.create({
     },
     
     button: {
+        borderWidth: 1,
         borderColor: "#639922",
         paddingVertical: 12,
         borderRadius: 12,

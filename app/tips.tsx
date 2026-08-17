@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { getNews, Article } from "../services/newsService";
 import { clearCache } from "../services/cacheService";
 import BottomNav from "../components/home/BottomNav";
@@ -61,6 +62,7 @@ export default function TipsScreen() {
 
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <View style={styles.header}>
                 <Pressable onPress={() => router.back()} style={styles.backBtn}>
                     <Text style={styles.backIcon}>‹</Text>
@@ -69,7 +71,7 @@ export default function TipsScreen() {
                 <View style={styles.backBtn} />
             </View>
 
-            <OfflineBanner /> 
+            <OfflineBanner />
 
             <ScrollView
                 contentContainerStyle={styles.content}
@@ -99,36 +101,41 @@ export default function TipsScreen() {
                     </View>
                 ) : (
                     artigos.map((artigo, idx) => (
-                        <Pressable
+                        <Animated.View
                             key={idx}
-                            style={styles.card}
-                            onPress={() => abrirArtigo(artigo.url)}
+                            entering={FadeInUp.delay(Math.min(idx, 8) * 50).duration(300)}
                         >
-                            {artigo.image ? (
-                                <Image
-                                    source={{ uri: artigo.image }}
-                                    style={styles.cardImage}
-                                />
-                            ) : null}
-                            <View style={styles.cardContent}>
-                                <Text style={styles.cardSource}>
-                                    {artigo.source?.name}
-                                </Text>
-                                <Text style={styles.cardTitle} numberOfLines={2}>
-                                    {artigo.title}
-                                </Text>
-                                <Text
-                                    style={styles.cardDescription}
-                                    numberOfLines={3}
-                                >
-                                    {artigo.description}
-                                </Text>
-                                <Text style={styles.cardLink}>Ler mais →</Text>
-                            </View>
-                        </Pressable>
+                            <Pressable
+                                style={styles.card}
+                                onPress={() => abrirArtigo(artigo.url)}
+                            >
+                                {artigo.image ? (
+                                    <Image
+                                        source={{ uri: artigo.image }}
+                                        style={styles.cardImage}
+                                    />
+                                ) : null}
+                                <View style={styles.cardContent}>
+                                    <Text style={styles.cardSource}>
+                                        {artigo.source?.name}
+                                    </Text>
+                                    <Text style={styles.cardTitle} numberOfLines={2}>
+                                        {artigo.title}
+                                    </Text>
+                                    <Text
+                                        style={styles.cardDescription}
+                                        numberOfLines={3}
+                                    >
+                                        {artigo.description}
+                                    </Text>
+                                    <Text style={styles.cardLink}>Ler mais →</Text>
+                                </View>
+                            </Pressable>
+                        </Animated.View>
                     ))
                 )}
             </ScrollView>
+            </Animated.View>
 
             <BottomNav />
         </SafeAreaView>

@@ -8,7 +8,7 @@ export default async function LoginPage() {
   const rememberedEmail = cookieStore.get(REMEMBER_COOKIE)?.value ?? "";
 
   return (
-    <div className="min-h-screen bg-reuse-bg">
+    <div className="min-h-screen bg-reuse-bg animate-page-in">
       <LoginForm
         defaultEmail={rememberedEmail}
         defaultRemember={Boolean(rememberedEmail)}

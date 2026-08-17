@@ -4,6 +4,8 @@ import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateItemAction, deleteItemAction } from "@/app/actions/items";
 import ScreenHeader from "@/components/ScreenHeader";
+import Modal from "@/components/Modal";
+import { useToast } from "@/components/ToastProvider";
 import { inputClass, inputHeightClass, labelClass, textAreaClass } from "@/lib/formStyles";
 
 type Item = {
@@ -16,15 +18,35 @@ type Item = {
 
 export default function MyItemsList({ itens }: { itens: Item[] }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [itemEditando, setItemEditando] = useState<Item | null>(null);
   const [itemExcluindo, setItemExcluindo] = useState<Item | null>(null);
   const [state, formAction, pending] = useActionState(updateItemAction, undefined);
 
+  // Mantém os dados do último item aberto durante a animação de saída do
+  // Modal (que continua montado por alguns ms depois de open=false). Ajuste
+  // de estado direto no corpo do componente (não em efeito) — padrão
+  // recomendado pelo React pra "derivar estado a partir de uma prop/valor
+  // que muda", sem re-render extra.
+  const [lastEditando, setLastEditando] = useState<Item | null>(null);
+  const [lastExcluindo, setLastExcluindo] = useState<Item | null>(null);
+  if (itemEditando && itemEditando !== lastEditando) {
+    setLastEditando(itemEditando);
+  }
+  if (itemExcluindo && itemExcluindo !== lastExcluindo) {
+    setLastExcluindo(itemExcluindo);
+  }
+
+  const editando = itemEditando ?? lastEditando;
+  const excluindo = itemExcluindo ?? lastExcluindo;
+
   useEffect(() => {
     if (state?.success) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- fecha o modal e notifica em reação ao resultado da server action (useActionState), não a um evento que dá pra tratar diretamente
       setItemEditando(null);
+      showToast("Item atualizado!");
     }
-  }, [state]);
+  }, [state, showToast]);
 
   return (
     <>
@@ -42,10 +64,11 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
         </div>
       ) : (
         <div className="flex flex-col gap-3 p-4">
-          {itens.map((item) => (
+          {itens.map((item, i) => (
             <div
               key={item.id}
-              className="rounded-xl border border-reuse-border bg-white p-3.5"
+              className="animate-item-in rounded-xl border border-reuse-border bg-white p-3.5"
+              style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
             >
               {item.imagem && (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -93,13 +116,13 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
         </div>
       )}
 
-      {itemEditando && (
-        <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40 px-2.5">
-          <div className="w-full max-w-md rounded-t-3xl bg-white px-[22px] pb-6 pt-5">
+      <Modal open={!!itemEditando} onClose={() => setItemEditando(null)}>
+        {editando && (
+          <>
             <p className="mb-4 text-lg font-bold text-reuse-text">Editar item</p>
 
-            <form key={itemEditando.id} action={formAction}>
-              <input type="hidden" name="id" value={itemEditando.id} />
+            <form key={editando.id} action={formAction}>
+              <input type="hidden" name="id" value={editando.id} />
 
               <label className={labelClass} htmlFor="edit-titulo">
                 Título
@@ -107,7 +130,7 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
               <input
                 id="edit-titulo"
                 name="titulo"
-                defaultValue={itemEditando.titulo}
+                defaultValue={editando.titulo}
                 placeholder="Título do item"
                 className={`${inputClass} ${inputHeightClass} mb-3.5`}
               />
@@ -118,7 +141,7 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
               <textarea
                 id="edit-descricao"
                 name="descricao"
-                defaultValue={itemEditando.descricao}
+                defaultValue={editando.descricao}
                 placeholder="Descrição do item"
                 className={`${textAreaClass} mb-3.5`}
               />
@@ -129,7 +152,7 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
               <input
                 id="edit-troca"
                 name="troca"
-                defaultValue={itemEditando.troca}
+                defaultValue={editando.troca}
                 placeholder="O que você aceita na troca"
                 className={`${inputClass} ${inputHeightClass} mb-3.5`}
               />
@@ -157,26 +180,29 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
 
-      {itemExcluindo && (
-        <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/40 px-2.5">
-          <div className="w-full max-w-md rounded-t-3xl bg-white px-[22px] pb-6 pt-5">
+      <Modal open={!!itemExcluindo} onClose={() => setItemExcluindo(null)}>
+        {excluindo && (
+          <>
             <p className="mb-3.5 text-xl font-bold leading-tight text-reuse-text">
               Excluir item
             </p>
             <p className="mb-7 text-[15px] leading-relaxed text-reuse-text">
-              Tem certeza que deseja excluir &ldquo;{itemExcluindo.titulo}&rdquo;? Essa ação
+              Tem certeza que deseja excluir &ldquo;{excluindo.titulo}&rdquo;? Essa ação
               não pode ser desfeita.
             </p>
 
             <form
               action={deleteItemAction}
-              onSubmit={() => setItemExcluindo(null)}
+              onSubmit={() => {
+                setItemExcluindo(null);
+                showToast("Item excluído.");
+              }}
             >
-              <input type="hidden" name="id" value={itemExcluindo.id} />
+              <input type="hidden" name="id" value={excluindo.id} />
               <button
                 type="submit"
                 className="mb-2.5 w-full rounded-lg bg-reuse-danger py-3.5 text-[13px] font-bold text-white"
@@ -191,9 +217,9 @@ export default function MyItemsList({ itens }: { itens: Item[] }) {
             >
               Cancelar
             </button>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createItemAction } from "@/app/actions/items";
 import ScreenHeader from "@/components/ScreenHeader";
 import PrimaryButton from "@/components/PrimaryButton";
+import Modal from "@/components/Modal";
 import { inputClass, inputHeightClass, labelClass, textAreaClass } from "@/lib/formStyles";
 
 export default function PublishItemForm() {
@@ -145,44 +146,40 @@ export default function PublishItemForm() {
         </div>
       </form>
 
-      {showExitModal && (
-        <div className="fixed inset-0 z-20 flex items-end justify-center bg-black/35 px-2.5">
-          <div className="w-full max-w-md rounded-t-3xl bg-white px-[22px] pb-6 pt-5">
-            <div className="mb-2 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowExitModal(false)}
-                className="text-2xl text-reuse-text"
-                aria-label="Fechar"
-              >
-                ×
-              </button>
-            </div>
-
-            <p className="mb-3.5 text-xl font-bold leading-tight text-reuse-text">
-              Você deseja continuar a publicação desse item?
-            </p>
-            <p className="mb-7 text-[15px] leading-relaxed text-reuse-text">
-              Ao sair dessa tela, você cancelará a publicação desse item
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setShowExitModal(false)}
-              className="mb-2.5 w-full rounded-lg bg-reuse-green-accent py-3.5 text-[13px] font-bold text-white"
-            >
-              Sim, voltar para publicação
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push("/home")}
-              className="w-full rounded-lg border border-reuse-green-accent py-3.5 text-[13px] font-bold text-reuse-green-accent"
-            >
-              Não, sair e cancelar item
-            </button>
-          </div>
+      <Modal open={showExitModal} onClose={() => setShowExitModal(false)}>
+        <div className="mb-2 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setShowExitModal(false)}
+            className="text-2xl text-reuse-text"
+            aria-label="Fechar"
+          >
+            ×
+          </button>
         </div>
-      )}
+
+        <p className="mb-3.5 text-xl font-bold leading-tight text-reuse-text">
+          Você deseja continuar a publicação desse item?
+        </p>
+        <p className="mb-7 text-[15px] leading-relaxed text-reuse-text">
+          Ao sair dessa tela, você cancelará a publicação desse item
+        </p>
+
+        <button
+          type="button"
+          onClick={() => setShowExitModal(false)}
+          className="mb-2.5 w-full rounded-lg bg-reuse-green-accent py-3.5 text-[13px] font-bold text-white"
+        >
+          Sim, voltar para publicação
+        </button>
+        <button
+          type="button"
+          onClick={() => router.push("/home")}
+          className="w-full rounded-lg border border-reuse-green-accent py-3.5 text-[13px] font-bold text-reuse-green-accent"
+        >
+          Não, sair e cancelar item
+        </button>
+      </Modal>
     </>
   );
 }

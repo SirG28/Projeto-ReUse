@@ -11,9 +11,11 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import Logo from "../components/Logo";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { login } from "../services/authService";
 
 export default function LoginScreen() {
@@ -44,6 +46,8 @@ export default function LoginScreen() {
     }
 
     async function handleLogin() {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
         if (!email || !senha) {
             Alert.alert("Atenção", "Preencha e-mail e senha.");
             return;
@@ -72,6 +76,7 @@ export default function LoginScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <View style={styles.content}>
                 <View style={styles.headerArea}>
                     <Logo markSize={38} wordmarkSize={26} style={styles.logo} />
@@ -134,6 +139,7 @@ export default function LoginScreen() {
                     <PrimaryButton title="Entrar" onPress={handleLogin} />
                 )}
             </View>
+            </Animated.View>
         </SafeAreaView>
     );
 }

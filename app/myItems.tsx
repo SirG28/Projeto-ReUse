@@ -13,9 +13,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
+import * as Haptics from "expo-haptics";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { getCurrentUser } from "../services/authService";
 import { Feather } from '@expo/vector-icons';
 import BottomNav from "../components/home/BottomNav";
+import { useToast } from "../components/ui/ToastProvider";
 
 type Item = {
     id: string;
@@ -29,6 +32,7 @@ type Item = {
 
 export default function MyItemsScreen() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [itens, setItens] = useState<Item[]>([]);
     const [itemEditando, setItemEditando] = useState<Item | null>(null);
     const [tituloEdit, setTituloEdit] = useState("");
@@ -92,6 +96,7 @@ export default function MyItemsScreen() {
         );
         setItemEditando(null);
         await carregar();
+        showToast("Item atualizado!");
     }
 
     async function excluirItem(id: string) {
@@ -101,6 +106,7 @@ export default function MyItemsScreen() {
                 text: "Excluir",
                 style: "destructive",
                 onPress: async () => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     const salvo = await AsyncStorage.getItem("@reuse_itens");
                     const todos: Item[] = salvo ? JSON.parse(salvo) : [];
                     const atualizadosTodos = todos.filter((i) => i.id !== id);
@@ -109,6 +115,7 @@ export default function MyItemsScreen() {
                         JSON.stringify(atualizadosTodos)
                     );
                     await carregar();
+                    showToast("Item excluído.");
                 },
             },
         ]);
@@ -116,6 +123,7 @@ export default function MyItemsScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <View style={styles.header}>
                 <Pressable onPress={() => router.back()} style={styles.headerButton}>
                     <Text style={styles.headerIcon}>‹</Text>
@@ -133,8 +141,11 @@ export default function MyItemsScreen() {
                     data={itens}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={styles.list}
-                    renderItem={({ item }) => (
-                        <View style={styles.card}>
+                    renderItem={({ item, index }) => (
+                        <Animated.View
+                            style={styles.card}
+                            entering={FadeInDown.delay(Math.min(index, 8) * 60).duration(300)}
+                        >
                             {item.imagem && (
                                 <Image
                                     source={{ uri: item.imagem }}
@@ -161,10 +172,11 @@ export default function MyItemsScreen() {
                                     <Text style={styles.btnExcluirText}>Excluir</Text>
                                 </Pressable>
                             </View>
-                        </View>
+                        </Animated.View>
                     )}
                 />
             )}
+            </Animated.View>
 
             <Modal visible={!!itemEditando} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>

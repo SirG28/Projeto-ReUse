@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { register } from "../services/authService";
 import { buscarCep } from "../services/cepService";
@@ -87,6 +88,7 @@ export default function RegisterScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -202,6 +204,7 @@ export default function RegisterScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+            </Animated.View>
         </SafeAreaView>
     );
 }

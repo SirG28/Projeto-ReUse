@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { Text, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import AnimatedPressable from "./AnimatedPressable";
 
 type PrimaryButtonProps = {
     title: string;
@@ -13,9 +14,9 @@ export default function PrimaryButton({
     style,
 }: PrimaryButtonProps) {
     return (
-        <Pressable style={[styles.button, style]} onPress={onPress}>
+        <AnimatedPressable style={[styles.button, style]} onPress={onPress}>
             <Text style={styles.buttonText}>{title}</Text>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 type Props = {
   name: string;
@@ -38,8 +39,13 @@ export default function UserSummaryCard({ name, itemCount, pontos }: Props) {
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-[#E6E6E6]">
           <div
-            className="h-full rounded-full bg-reuse-green"
-            style={{ width: `${progresso}%` }}
+            className="h-full rounded-full bg-reuse-green animate-progress-fill"
+            style={
+              {
+                width: `${progresso}%`,
+                "--progress-target": `${progresso}%`,
+              } as CSSProperties
+            }
           />
         </div>
       </div>

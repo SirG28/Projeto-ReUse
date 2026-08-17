@@ -36,7 +36,7 @@ export async function createItemAction(
     },
   });
 
-  redirect("/home");
+  redirect("/home?toast=published");
 }
 
 export type UpdateItemState = { error?: string; success?: boolean } | undefined;

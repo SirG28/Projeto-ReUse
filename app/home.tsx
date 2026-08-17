@@ -8,6 +8,7 @@ import {
     View,
     RefreshControl,
 } from "react-native";
+import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { getCurrentUser } from "../services/authService";
 import HeaderHome from "../components/home/HeaderHome";
 import UserSummaryCard from "../components/home/UserSummaryCard";
@@ -59,9 +60,10 @@ export default function HomeScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Animated.View style={{ flex: 1 }} entering={FadeInDown.duration(220)}>
             <HeaderHome />
 
-            <OfflineBanner /> 
+            <OfflineBanner />
 
             <ScrollView
                 showsVerticalScrollIndicator={false}
@@ -123,18 +125,23 @@ export default function HomeScreen() {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.itemsRow}
                     >
-                        {itens.map((item) => (
-                            <ItemCard
+                        {itens.map((item, i) => (
+                            <Animated.View
                                 key={item.id}
-                                imagem={item.imagem}
-                                titulo={item.titulo}
-                                descricao={item.descricao}
-                                troca={item.troca}
-                            />
+                                entering={FadeInRight.delay(Math.min(i, 8) * 60).duration(300)}
+                            >
+                                <ItemCard
+                                    imagem={item.imagem}
+                                    titulo={item.titulo}
+                                    descricao={item.descricao}
+                                    troca={item.troca}
+                                />
+                            </Animated.View>
                         ))}
                     </ScrollView>
                 )}
             </ScrollView>
+            </Animated.View>
 
             <BottomNav />
         </SafeAreaView>
