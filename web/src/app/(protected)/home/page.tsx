@@ -41,8 +41,14 @@ export default async function HomePage() {
             icon="+"
             href="/items/new"
           />
+          <ShortcutCard
+            title="Dicas Sustentáveis"
+            xp="🌱"
+            icon="💡"
+            href="/tips"
+          />
           <ShortcutCard title="Realizar Troca" xp="+ 100 XP" icon="⇄" />
-          <ShortcutCard title="Ranking" xp="🏆" icon="🏆" />
+          <ShortcutCard title="Ranking" xp="+ 20 XP" icon="🏆" />
         </div>
 
         <SectionHeader title="Itens para trocar" actionText="Ver todos" />
