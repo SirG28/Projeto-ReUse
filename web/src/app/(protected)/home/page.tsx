@@ -34,7 +34,7 @@ export default async function HomePage() {
         <UserSummaryCard name={user.name} itemCount={itemCount} pontos={pontos} />
 
         <SectionHeader title="Atalhos" />
-        <div className="mb-[18px] flex gap-2.5 overflow-x-auto pb-1">
+        <div className="no-scrollbar mb-[18px] flex gap-2.5 overflow-x-auto pb-1">
           <ShortcutCard
             title="Publicar Item"
             xp="+ 50 XP"
@@ -60,7 +60,7 @@ export default async function HomePage() {
             </p>
           </div>
         ) : (
-          <div className="flex gap-3 overflow-x-auto pb-1">
+          <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
             {itens.map((item, i) => (
               <div
                 key={item.id}

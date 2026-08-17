@@ -35,6 +35,15 @@ body {
   color: var(--color-reuse-text);
 }
 
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legado */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge */
+}
+
 @keyframes page-in {
   from {
     opacity: 0;
