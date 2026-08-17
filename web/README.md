@@ -1,4 +1,4 @@
-# 🌐 ReUse! Web
+# ReUse! Web
 
 Plataforma web da **ReUse!**, construída em **Next.js (App Router)** com **Prisma ORM** e **PostgreSQL**. É uma via de acesso adicional ao [app mobile](../README.md) (React Native/Expo), cobrindo o núcleo de autenticação e publicação/listagem de itens — não uma cópia integral do app.
 
@@ -6,7 +6,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 
 ---
 
-## 🖥️ Telas
+## Telas
 
 | Tela | Rota | Objetivo |
 |---|---|---|
@@ -22,7 +22,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 
 ---
 
-## 🧩 Prisma nas telas
+## Prisma nas telas
 
 | Tela | Uso do Prisma |
 |---|---|
@@ -36,7 +36,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 
 ---
 
-## 🗄️ Banco de dados (Postgres via Prisma) — `prisma/schema.prisma`
+## Banco de dados (Postgres via Prisma) — `prisma/schema.prisma`
 
 | Tabela | Campos principais | Objetivo |
 |---|---|---|
@@ -46,7 +46,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 
 ---
 
-## ⚙️ Stack
+## Stack
 
 - **Next.js 16** (App Router, Server Actions, Turbopack)
 - **TypeScript**
@@ -57,7 +57,7 @@ O visual (cores, tipografia, componentes) foi recriado a partir dos mesmos token
 
 ---
 
-## 🚀 Como rodar
+## Como rodar
 
 O desenvolvimento e os testes deste projeto foram feitos com Postgres na nuvem via **[Neon](https://neon.tech)**. O `docker-compose.yml` do repositório sobe um Postgres local equivalente, como alternativa para quem não quiser criar uma conta no Neon (ex.: para rodar/avaliar o projeto sem depender de um banco externo).
 
@@ -98,14 +98,14 @@ npm run dev
 
 Acesse [http://localhost:3000](http://localhost:3000).
 
-### 🔑 Login de teste (criado pelo seed)
+### Login de teste (criado pelo seed)
 
 - `ana@reuse.com` / senha `reuse123`
 - `bruno@reuse.com` / senha `reuse123`
 
 Cada uma tem itens publicados visíveis no feed da outra.
 
-### 🔍 Inspecionar o banco
+### Inspecionar o banco
 
 ```bash
 npx prisma studio

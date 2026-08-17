@@ -1,6 +1,6 @@
-# 📱 ReUse — App de Reutilização
+# ReUse — App de Reutilização
 
-## 📌 Sobre o projeto
+## Sobre o projeto
 
 O **ReUse** é um aplicativo mobile desenvolvido em **React Native (Expo)** com o objetivo de conectar pessoas para reutilização de itens, reduzindo desperdício e incentivando o consumo consciente.
 
@@ -8,7 +8,7 @@ Nesta fase, o aplicativo evoluiu de uma aplicação puramente local para uma apl
 
 ---
 
-## 🎯 Objetivos da fase atual
+## Objetivos da fase atual
 
 - Consumir múltiplas APIs externas (públicas e com autenticação)
 - Implementar autenticação real com sessões persistentes
@@ -17,7 +17,7 @@ Nesta fase, o aplicativo evoluiu de uma aplicação puramente local para uma apl
 
 ---
 
-## 🌐 APIs integradas
+## APIs integradas
 
 | API | Tipo | Telas onde é usada |
 |---|---|---|
@@ -28,7 +28,7 @@ Nesta fase, o aplicativo evoluiu de uma aplicação puramente local para uma apl
 
 ---
 
-## 🔐 Autenticação e sessões
+## Autenticação e sessões
 
 - **Cadastro**: cria usuário no MockAPI via POST e faz auto-login.
 - **Login**: busca usuário pelo e-mail no MockAPI e valida senha (filtragem client-side, ver Considerações Técnicas abaixo).
@@ -37,7 +37,7 @@ Nesta fase, o aplicativo evoluiu de uma aplicação puramente local para uma apl
 
 ---
 
-## 💾 Caching local
+## Caching local
 
 Helper centralizado em `services/cacheService.ts` com **TTL configurável** e **fallback para cache antigo (stale)** em caso de falha de rede.
 
@@ -55,7 +55,7 @@ Helper centralizado em `services/cacheService.ts` com **TTL configurável** e **
 
 ---
 
-## 📱 Telas
+## Telas
 
 | Tela | Fase em que foi criada | Recursos |
 |---|---|---|
@@ -70,7 +70,7 @@ Helper centralizado em `services/cacheService.ts` com **TTL configurável** e **
 
 ---
 
-## 🗂️ Estrutura de pastas relevante
+## Estrutura de pastas relevante
 
 ```
 app/
@@ -98,7 +98,7 @@ components/
 
 ---
 
-## ⚙️ Tecnologias
+## Tecnologias
 
 - **React Native** + **Expo** (SDK 54) + **Expo Router**
 - **TypeScript**
@@ -109,7 +109,7 @@ components/
 
 ---
 
-## 🚀 Como rodar o projeto
+## Como rodar o projeto
 
 ### Pré-requisitos
 
@@ -134,9 +134,9 @@ npx expo start
 
 O Expo vai abrir um terminal interativo com um QR Code. Abra o **Expo Go** no celular e escaneie o QR Code para carregar o app.
 
-> 💡 Se preferir rodar em emulador Android/iOS, use `npx expo start --android` ou `npx expo start --ios` (requer Android Studio ou Xcode configurados).
+> Se preferir rodar em emulador Android/iOS, use `npx expo start --android` ou `npx expo start --ios` (requer Android Studio ou Xcode configurados).
 
-### 🧪 Testando o aplicativo
+### Testando o aplicativo
 
 1. Na tela inicial, clique em **"Começar"** → vai para a tela de Login.
 2. Como não há mais usuários hardcoded, **clique em "Criar conta"** para abrir a tela de Cadastro.
@@ -149,18 +149,18 @@ O Expo vai abrir um terminal interativo com um QR Code. Abra o **Expo Go** no ce
 7. Toque em uma dica sustentável → o artigo abre no navegador externo.
 8. Vá ao **Perfil** → veja os dados cadastrados (incluindo cidade/estado preenchidos pelo CEP) → clique em "Sair da conta" para fazer logout.
 
-### 🔑 Configuração das APIs
+### Configuração das APIs
 
 O projeto usa **MockAPI** e **GNews**, ambas com configurações via constantes no código:
 
 - **MockAPI**: a `API_BASE_URL` está configurada em `services/api.ts`. O projeto público usado já está populado com dados de teste.
 - **GNews**: a `GNEWS_API_KEY` está configurada em `services/newsService.ts`.
 
-> ℹ️ **Para o professor:** caso queira recriar o ambiente em uma instância MockAPI própria, basta criar um projeto em [mockapi.io](https://mockapi.io) com os resources `users` e `items`, e substituir a `API_BASE_URL`. O schema de campos está documentado no PDF de entrega.
+> **Para o professor:** caso queira recriar o ambiente em uma instância MockAPI própria, basta criar um projeto em [mockapi.io](https://mockapi.io) com os resources `users` e `items`, e substituir a `API_BASE_URL`. O schema de campos está documentado no PDF de entrega.
 
 ---
 
-## 📝 Considerações técnicas
+## Considerações técnicas
 
 - **Filtragem de usuários por e-mail é feita client-side** porque a instância do MockAPI utilizada retorna 404 ao receber filtros via query string em GET. Em produção real, seria feita no backend.
 - **Senhas são armazenadas em texto puro no MockAPI** — apenas para fins acadêmicos. Em produção, usaria-se hash (bcrypt), JWT e backend customizado.
@@ -168,7 +168,7 @@ O projeto usa **MockAPI** e **GNews**, ambas com configurações via constantes 
 
 ---
 
-## 👥 Integrantes
+## Integrantes
 
 - **Ana Carolina Cantarelli Fernandes** — RM: 561491
 - **Sarah Gonçalves Garcia** — RM: 563539
