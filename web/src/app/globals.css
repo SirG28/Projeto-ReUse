@@ -26,6 +26,46 @@
   --color-reuse-avatar-bg: #dce8c2;
   --color-reuse-danger: #e53935;
 
+  /*
+   * Escala neutra consolidada — absorve os ~20 hex soltos que estavam
+   * espalhados por componente (cards, chips, placeholders de imagem) em vez
+   * de reutilizar um token existente.
+   */
+  --color-reuse-surface-sunken: #f1f1ee;
+  --color-reuse-surface-raised: #fbfbfa;
+  --color-reuse-surface-muted: #f2f0ec;
+  --color-reuse-neutral-700: #3b3b3b;
+  --color-reuse-neutral-500: #6e6e6e;
+  --color-reuse-neutral-300: #cccccc;
+  --color-reuse-neutral-200: #e6e6e6;
+  --color-reuse-neutral-disabled: #b9b6ac;
+
+  /* Accent roxo — escopo único: selo de "verificado" no avatar. Não usar em
+     botões, links ou qualquer outro lugar (não é um accent de UI geral). */
+  --color-reuse-accent: #7a53c6;
+  --color-reuse-accent-tint: #e9ddfb;
+
+  /* Status de solicitação de troca — não existe convenção no app mobile,
+     originado aqui. Pendente/aceita/recusada/cancelada precisam ser
+     visualmente distintos (antes recusada e cancelada usavam o mesmo cinza). */
+  --color-reuse-status-pending: #b8860b;
+  --color-reuse-status-pending-bg: #fdf3d9;
+  --color-reuse-status-accepted: #639922;
+  --color-reuse-status-accepted-bg: #e9f2d9;
+  --color-reuse-status-rejected: #e53935;
+  --color-reuse-status-rejected-bg: #fbe9e8;
+  --color-reuse-status-cancelled: #8b8b8b;
+  --color-reuse-status-cancelled-bg: #eeeeee;
+
+  /* Rodapé escuro — "bookend" de cor com a faixa verde do header, pra tirar
+     o app do branco/cinza monocromático. Tom verde-petróleo quase preto,
+     não reutiliza --color-reuse-text (semântica de texto, não de fundo). */
+  --color-reuse-footer-bg: #202a17;
+  --color-reuse-footer-bg-raised: #2a3620;
+  --color-reuse-footer-text: #eef0e8;
+  --color-reuse-footer-text-secondary: #a9b39c;
+  --color-reuse-footer-border: #3a4630;
+
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
 }
@@ -33,6 +73,36 @@
 body {
   background: var(--color-reuse-bg);
   color: var(--color-reuse-text);
+  /* Scroll anchoring (padrão no Chrome) tenta compensar mudanças de altura
+     acima da viewport ajustando o scroll sozinho — no reload, pequenas
+     diferenças de altura durante a hidratação (carrosséis, imagens) faziam
+     a página "pular" alguns pixels pra baixo sem o usuário rolar nada. */
+  overflow-anchor: none;
+}
+
+/* Receita padrão do Google para o Material Symbols (fonte carregada em
+   src/app/layout.tsx) — src/components/Icon.tsx sobrescreve font-size e
+   font-variation-settings (FILL) por instância. */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-reuse-green-dark);
+  outline-offset: 2px;
 }
 
 .no-scrollbar {

@@ -7,6 +7,7 @@ import {
   createSession,
   destroySession,
   hashPassword,
+  requireSession,
   verifyPassword,
 } from "@/lib/auth";
 
@@ -89,6 +90,31 @@ export async function registerAction(
 
   await createSession(user.id);
   redirect("/home");
+}
+
+export type UpdateProfileState = { error?: string; success?: boolean } | undefined;
+
+export async function updateProfileAction(
+  _prevState: UpdateProfileState,
+  formData: FormData
+): Promise<UpdateProfileState> {
+  const user = await requireSession();
+
+  const name = String(formData.get("name") || "").trim();
+  const cep = String(formData.get("cep") || "").trim() || null;
+  const cidade = String(formData.get("cidade") || "").trim() || null;
+  const estado = String(formData.get("estado") || "").trim() || null;
+
+  if (!name) {
+    return { error: "Preencha seu nome." };
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { name, cep, cidade, estado },
+  });
+
+  return { success: true };
 }
 
 export async function logoutAction() {

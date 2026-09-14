@@ -1,66 +1,40 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
 import { registerAction } from "@/app/actions/auth";
-import PrimaryButton from "@/components/PrimaryButton";
-import ScreenHeader from "@/components/ScreenHeader";
+import Button from "@/components/Button";
+import Logo from "@/components/Logo";
+import PasswordInput from "@/components/PasswordInput";
 import { inputClass, inputHeightClass, labelClass } from "@/lib/formStyles";
-
-type CepResult = {
-  localidade: string;
-  uf: string;
-  erro?: boolean;
-};
+import { useCepLookup } from "@/lib/useCepLookup";
 
 export default function RegisterForm() {
   const [state, formAction, pending] = useActionState(registerAction, undefined);
 
   const [cep, setCep] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [estado, setEstado] = useState("");
-  const [buscandoCep, setBuscandoCep] = useState(false);
-  const [cepError, setCepError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const cepLimpo = cep.replace(/\D/g, "");
-    if (cepLimpo.length !== 8) return;
-
-    let cancelled = false;
-
-    async function preencherEnderecoPorCep() {
-      setBuscandoCep(true);
-      setCepError(null);
-
-      try {
-        const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
-        const data: CepResult = await res.json();
-        if (cancelled) return;
-
-        if (data.erro) {
-          setCepError("CEP não encontrado.");
-          return;
-        }
-        setCidade(data.localidade);
-        setEstado(data.uf);
-      } catch {
-        if (!cancelled) setCepError("Não foi possível buscar o CEP.");
-      } finally {
-        if (!cancelled) setBuscandoCep(false);
-      }
-    }
-
-    preencherEnderecoPorCep();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [cep]);
+  const {
+    cidade,
+    setCidade,
+    estado,
+    setEstado,
+    buscando: buscandoCep,
+    erro: cepError,
+  } = useCepLookup(cep);
 
   return (
-    <>
-      <ScreenHeader title="Criar conta" backHref="/login" />
+    <div>
+      <Logo size={34} className="mb-6 md:hidden" />
 
-      <form action={formAction} className="px-5 pb-10 pt-[18px]">
+      <h1 className="mb-1 text-2xl font-bold text-reuse-text">Criar conta</h1>
+      <p className="mb-6 text-sm text-reuse-text-secondary">
+        Já tem uma conta?{" "}
+        <Link href="/login" className="font-semibold text-reuse-green underline">
+          Entrar
+        </Link>
+      </p>
+
+      <form action={formAction}>
         <label className={labelClass} htmlFor="name">
           Nome completo *
         </label>
@@ -86,22 +60,20 @@ export default function RegisterForm() {
         <label className={labelClass} htmlFor="password">
           Senha *
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
-          className={`${inputClass} ${inputHeightClass} mb-3.5`}
+          className="mb-3.5"
           placeholder="Mínimo 4 caracteres"
         />
 
         <label className={labelClass} htmlFor="confirmPassword">
           Confirmar senha *
         </label>
-        <input
+        <PasswordInput
           id="confirmPassword"
           name="confirmPassword"
-          type="password"
-          className={`${inputClass} ${inputHeightClass} mb-3.5`}
+          className="mb-3.5"
           placeholder="Repita a senha"
         />
 
@@ -165,11 +137,11 @@ export default function RegisterForm() {
         )}
 
         <div className="mt-5">
-          <PrimaryButton disabled={pending}>
+          <Button type="submit" disabled={pending}>
             {pending ? "Criando conta..." : "Criar conta"}
-          </PrimaryButton>
+          </Button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

@@ -4,47 +4,12 @@ import { useActionState, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createItemAction } from "@/app/actions/items";
 import ScreenHeader from "@/components/ScreenHeader";
-import PrimaryButton from "@/components/PrimaryButton";
+import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import { inputClass, inputHeightClass, labelClass, textAreaClass } from "@/lib/formStyles";
-
-function comprimirImagem(
-  file: File,
-  maxDimensao = 1200,
-  qualidade = 0.75
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(reader.error);
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > height && width > maxDimensao) {
-          height = Math.round((height * maxDimensao) / width);
-          width = maxDimensao;
-        } else if (height > maxDimensao) {
-          width = Math.round((width * maxDimensao) / height);
-          height = maxDimensao;
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          reject(new Error("Canvas indisponível"));
-          return;
-        }
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", qualidade));
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
-}
+import { comprimirImagem } from "@/lib/comprimirImagem";
+import { CATEGORIAS } from "@/lib/categorias";
+import { IconClose, IconPlus } from "@/components/icons";
 
 export default function PublishItemForm() {
   const router = useRouter();
@@ -78,16 +43,16 @@ export default function PublishItemForm() {
           <button
             type="button"
             onClick={() => setShowExitModal(true)}
-            className="text-xl text-reuse-green"
+            className="text-reuse-green"
             aria-label="Fechar"
           >
-            ×
+            <IconClose size={20} />
           </button>
         }
       />
 
-      <form action={formAction} className="px-4 pt-[18px]">
-        <div className="relative mb-6 flex h-[190px] w-full items-center justify-center overflow-hidden bg-[#ECECEC]">
+      <form action={formAction} className="px-4 pt-[18px] md:mx-auto md:max-w-md">
+        <div className="relative mb-6 flex h-[190px] w-full items-center justify-center overflow-hidden bg-reuse-neutral-200">
           {imagem ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -96,15 +61,16 @@ export default function PublishItemForm() {
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="h-full w-full bg-[#E9E9E9]" />
+            <div className="h-full w-full bg-reuse-surface-sunken" />
           )}
 
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="absolute rounded-lg border border-reuse-green bg-reuse-bg px-4 py-2 text-[13px] font-semibold text-reuse-green"
+            className="absolute flex items-center gap-1.5 rounded-lg border border-reuse-green bg-reuse-bg px-4 py-2 text-[13px] font-semibold text-reuse-green"
           >
-            ＋ Adicionar foto
+            <IconPlus size={13} />
+            Adicionar foto
           </button>
         </div>
 
@@ -140,6 +106,22 @@ export default function PublishItemForm() {
           className={`${textAreaClass} mb-3.5`}
         />
 
+        <label className={labelClass} htmlFor="categoria">
+          Categoria
+        </label>
+        <select
+          id="categoria"
+          name="categoria"
+          defaultValue="OUTROS"
+          className={`${inputClass} ${inputHeightClass} mb-3.5`}
+        >
+          {CATEGORIAS.map((categoria) => (
+            <option key={categoria.value} value={categoria.value}>
+              {categoria.label}
+            </option>
+          ))}
+        </select>
+
         <h2 className="mb-3.5 text-lg font-bold text-reuse-text">Troca</h2>
 
         <label className={labelClass} htmlFor="troca">
@@ -166,18 +148,6 @@ export default function PublishItemForm() {
           className={`${inputClass} ${inputHeightClass} mb-3.5`}
         />
 
-        <label className={labelClass} htmlFor="email">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autoCapitalize="none"
-          placeholder="lorem@gmail.com"
-          className={`${inputClass} ${inputHeightClass} mb-3.5`}
-        />
-
         {state?.error && (
           <p className="mb-3 rounded-lg border border-reuse-danger/30 bg-red-50 px-3 py-2 text-sm text-reuse-danger">
             {state.error}
@@ -185,9 +155,16 @@ export default function PublishItemForm() {
         )}
 
         <div className="mt-3.5">
-          <PrimaryButton disabled={pending}>
-            {pending ? "Publicando..." : "+   Publicar item"}
-          </PrimaryButton>
+          <Button type="submit" disabled={pending} className="flex items-center justify-center gap-2">
+            {pending ? (
+              "Publicando..."
+            ) : (
+              <>
+                <IconPlus size={16} />
+                Publicar item
+              </>
+            )}
+          </Button>
         </div>
       </form>
 
@@ -196,10 +173,10 @@ export default function PublishItemForm() {
           <button
             type="button"
             onClick={() => setShowExitModal(false)}
-            className="text-2xl text-reuse-text"
+            className="text-reuse-text"
             aria-label="Fechar"
           >
-            ×
+            <IconClose size={22} />
           </button>
         </div>
 
@@ -210,20 +187,12 @@ export default function PublishItemForm() {
           Ao sair dessa tela, você cancelará a publicação desse item
         </p>
 
-        <button
-          type="button"
-          onClick={() => setShowExitModal(false)}
-          className="mb-2.5 w-full rounded-lg bg-reuse-green-accent py-3.5 text-[13px] font-bold text-white"
-        >
+        <Button type="button" size="sm" fullWidth className="mb-2.5" onClick={() => setShowExitModal(false)}>
           Sim, voltar para publicação
-        </button>
-        <button
-          type="button"
-          onClick={() => router.push("/home")}
-          className="w-full rounded-lg border border-reuse-green-accent py-3.5 text-[13px] font-bold text-reuse-green-accent"
-        >
+        </Button>
+        <Button type="button" variant="secondary" size="sm" fullWidth onClick={() => router.push("/home")}>
           Não, sair e cancelar item
-        </button>
+        </Button>
       </Modal>
     </>
   );

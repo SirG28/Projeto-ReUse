@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/auth";
+import { parseCategoria } from "@/lib/categorias";
 
 export type CreateItemState = { error?: string } | undefined;
 
@@ -18,6 +19,7 @@ export async function createItemAction(
   const troca = String(formData.get("troca") || "").trim();
   const whatsapp = String(formData.get("whatsapp") || "").trim();
   const imagem = String(formData.get("imagem") || "").trim() || null;
+  const categoria = parseCategoria(formData.get("categoria"));
 
   if (!titulo || !descricao || !troca || !whatsapp) {
     return {
@@ -30,6 +32,7 @@ export async function createItemAction(
       titulo,
       descricao,
       troca,
+      categoria,
       whatsapp,
       imagem,
       userId: user.id,
@@ -37,6 +40,14 @@ export async function createItemAction(
   });
 
   redirect("/home?toast=published");
+}
+
+async function requireOwnedItem(id: string, userId: string) {
+  const item = await prisma.item.findUnique({ where: { id } });
+  if (!item || item.userId !== userId) {
+    return null;
+  }
+  return item;
 }
 
 export type UpdateItemState = { error?: string; success?: boolean } | undefined;
@@ -51,22 +62,24 @@ export async function updateItemAction(
   const titulo = String(formData.get("titulo") || "").trim();
   const descricao = String(formData.get("descricao") || "").trim();
   const troca = String(formData.get("troca") || "").trim();
+  const imagem = String(formData.get("imagem") || "").trim() || null;
+  const categoria = parseCategoria(formData.get("categoria"));
 
   if (!titulo || !descricao || !troca) {
     return { error: "Preencha todos os campos." };
   }
 
-  const item = await prisma.item.findUnique({ where: { id } });
-  if (!item || item.userId !== user.id) {
+  const item = await requireOwnedItem(id, user.id);
+  if (!item) {
     return { error: "Item não encontrado." };
   }
 
   await prisma.item.update({
     where: { id },
-    data: { titulo, descricao, troca },
+    data: { titulo, descricao, troca, categoria, imagem },
   });
 
-  revalidatePath("/items/mine");
+  revalidatePath("/profile");
   return { success: true };
 }
 
@@ -74,11 +87,12 @@ export async function deleteItemAction(formData: FormData) {
   const user = await requireSession();
   const id = String(formData.get("id") || "");
 
-  const item = await prisma.item.findUnique({ where: { id } });
-  if (!item || item.userId !== user.id) {
+  const item = await requireOwnedItem(id, user.id);
+  if (!item) {
     return;
   }
 
   await prisma.item.delete({ where: { id } });
-  revalidatePath("/items/mine");
+  revalidatePath("/profile");
+  redirect("/profile");
 }

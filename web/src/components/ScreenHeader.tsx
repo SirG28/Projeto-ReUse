@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { IconChevronLeft } from "@/components/icons";
 
 type Props = {
   title: string;
@@ -15,18 +16,18 @@ export default function ScreenHeader({ title, backHref, onBack, right }: Props) 
         <button
           type="button"
           onClick={onBack}
-          className="flex w-8 items-center justify-center text-[28px] leading-8 text-reuse-green"
+          className="flex w-8 items-center justify-center text-reuse-green md:hidden"
           aria-label="Voltar"
         >
-          ‹
+          <IconChevronLeft size={20} />
         </button>
       ) : (
         <Link
           href={backHref}
-          className="flex w-8 items-center justify-center text-[28px] leading-8 text-reuse-green"
+          className="flex w-8 items-center justify-center text-reuse-green md:hidden"
           aria-label="Voltar"
         >
-          ‹
+          <IconChevronLeft size={20} />
         </Link>
       )}
       <span className="text-lg font-bold text-reuse-text">{title}</span>

@@ -1,32 +1,34 @@
+import Image from "next/image";
+
 type Props = {
-  markSize?: number;
+  size?: number;
   className?: string;
+  // "light" troca o "Re" cinza-escuro por branco — pra usar sobre fundos
+  // escuros (rodapé), onde a variante padrão perderia contraste. "mono" vai
+  // além: até o "Use!" (verde-claro no "light") vira branco, pra manter
+  // contraste em qualquer tom de verde — usada no painel de marca das telas
+  // de Entrar/Criar conta, onde o "light" ainda ficava apagado.
+  variant?: "default" | "light" | "mono";
 };
 
-export default function Logo({ markSize = 34, className = "" }: Props) {
+// A logo (ícone + logotipo) vive em /public/brand — cores da marca já
+// embutidas no arquivo, não precisa de props de cor além da variante.
+const ASPECT_RATIO = 300 / 100;
+const SRC = {
+  default: "/brand/reuse-logo-horizontal.svg",
+  light: "/brand/reuse-logo-horizontal-light.svg",
+  mono: "/brand/reuse-logo-horizontal-mono.svg",
+};
+
+export default function Logo({ size = 32, className = "", variant = "default" }: Props) {
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <svg
-        viewBox="0 0 100 100"
-        width={markSize}
-        height={markSize}
-        role="img"
-        aria-label="ReUse!"
-      >
-        <path
-          d="M 44.18,17.01 A 33.5,33.5 0 0 1 79.01,66.75 L 85.51,70.5 L 69.25,72.66 L 62.99,57.5 L 69.49,61.25 A 22.5,22.5 0 0 0 46.09,27.84 A 5.5,5.5 0 0 1 44.18,17.01 Z"
-          fill="#7aa61c"
-        />
-        <path
-          d="M 55.82,82.99 A 33.5,33.5 0 0 1 20.99,33.25 L 14.49,29.5 L 30.75,27.34 L 37.01,42.5 L 30.51,38.75 A 22.5,22.5 0 0 0 53.91,72.16 A 5.5,5.5 0 0 1 55.82,82.99 Z"
-          fill="#639922"
-        />
-      </svg>
-      <span className="text-2xl font-extrabold tracking-tight">
-        <span className="text-reuse-text">Re</span>
-        <span className="text-reuse-green">Use</span>
-        <span className="text-reuse-green-dark">!</span>
-      </span>
-    </div>
+    <Image
+      src={SRC[variant]}
+      alt="ReUse!"
+      width={Math.round(size * ASPECT_RATIO)}
+      height={size}
+      priority
+      className={className}
+    />
   );
 }

@@ -34,13 +34,13 @@ export default function Modal({ open, onClose, children }: Props) {
 
   return (
     <div
-      className={`fixed inset-0 z-20 flex items-end justify-center px-2.5 transition-opacity duration-[250ms] ${
+      className={`fixed inset-0 z-20 flex items-end justify-center px-2.5 transition-opacity duration-[250ms] md:items-center ${
         visible ? "bg-black/40 opacity-100" : "bg-black/40 opacity-0"
       }`}
       onClick={onClose}
     >
       <div
-        className={`w-full max-w-md rounded-t-3xl bg-white px-[22px] pb-6 pt-5 transition-transform duration-[250ms] ease-out ${
+        className={`w-full max-w-md rounded-t-3xl bg-white px-[22px] pb-6 pt-5 transition-transform duration-[250ms] ease-out md:rounded-3xl ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
         onClick={(e) => e.stopPropagation()}

@@ -22,22 +22,119 @@ model User {
   estado       String?
   createdAt    DateTime @default(now())
 
-  items    Item[]
-  sessions Session[]
+  items         Item[]
+  sessions      Session[]
+  comments      Comment[]
+  itemViews     ItemView[]
+  favorites     Favorite[]
+  tradeRequests TradeRequest[]
+}
+
+// Categorias do marketplace — usadas para navegação/filtro na página "Ver
+// todos" (/items). Não restringem com quem um item pode ser trocado: o
+// campo `troca` já é livre hoje, e trocas cruzadas entre categorias são o
+// próprio ponto de um app de troca (a mesma lógica de qualquer marketplace
+// real, onde categoria é descoberta, não regra de negócio).
+enum Categoria {
+  ELETRONICOS
+  MOVEIS_DECORACAO
+  ROUPAS_ACESSORIOS
+  LIVROS_MIDIA
+  ESPORTE_LAZER
+  BRINQUEDOS_INFANTIL
+  ELETRODOMESTICOS
+  INSTRUMENTOS_MUSICAIS
+  FERRAMENTAS_JARDIM
+  OUTROS
+}
+
+// Disponibilidade do item no marketplace. Vira TROCADO quando uma
+// solicitação de troca é aceita, saindo do feed/listagens automaticamente.
+enum ItemStatus {
+  DISPONIVEL
+  TROCADO
 }
 
 // Item publicado para troca (equivalente ao Item de services/itemsService.ts no mobile)
 model Item {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   titulo    String
   descricao String
   troca     String
+  categoria Categoria  @default(OUTROS)
+  status    ItemStatus @default(DISPONIVEL)
   imagem    String?
   whatsapp  String
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  comments  Comment[]
+  views     ItemView[]
+  favorites Favorite[]
+
+  solicitacoesRecebidas TradeRequest[] @relation("ItemDesejado")
+  solicitacoesFeitas    TradeRequest[] @relation("ItemOfertado")
+}
+
+enum TradeRequestStatus {
+  PENDENTE
+  ACEITA
+  RECUSADA
+  CANCELADA
+}
+
+// Pedido de troca: alguém oferece um item próprio (itemOfertado) em troca de
+// um item de outra pessoa (itemDesejado). Ao ser aceito, os dois itens ficam
+// TROCADO e qualquer outro pedido pendente envolvendo qualquer um dos dois é
+// recusado automaticamente (não fazem mais sentido).
+model TradeRequest {
+  id        String             @id @default(cuid())
+  mensagem  String?
+  status    TradeRequestStatus @default(PENDENTE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  itemDesejadoId String
+  itemDesejado   Item   @relation("ItemDesejado", fields: [itemDesejadoId], references: [id], onDelete: Cascade)
+
+  itemOfertadoId String
+  itemOfertado   Item   @relation("ItemOfertado", fields: [itemOfertadoId], references: [id], onDelete: Cascade)
+
+  solicitanteId String
+  solicitante   User   @relation(fields: [solicitanteId], references: [id], onDelete: Cascade)
+}
+
+// Registro de "último visto": um usuário só tem uma linha por item, que é
+// atualizada (não duplicada) a cada nova visita — alimenta a seção "Últimos
+// vistos" da Home ordenando por viewedAt.
+model ItemView {
+  id       String   @id @default(cuid())
+  viewedAt DateTime @default(now())
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+}
+
+// Item salvo por um usuário pra ver depois — alimenta a seção "Seus
+// favoritos" da Home e o botão de coração no detalhe do item.
+model Favorite {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
 }
 
 // Sessão de autenticação da versão web (o mobile usa AsyncStorage local; na web
@@ -50,4 +147,24 @@ model Session {
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Comentário de um usuário em um item publicado (área nova: detalhe do item)
+model Comment {
+  id        String   @id @default(cuid())
+  conteudo  String
+  createdAt DateTime @default(now())
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Resposta a um comentário existente (ex.: o dono do item respondendo a
+  // uma pergunta). Um nível só de profundidade: uma resposta não tem, ela
+  // mesma, respostas.
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
 }

@@ -1,21 +1,45 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/auth";
-import HeaderHome from "@/components/HeaderHome";
 import UserSummaryCard from "@/components/UserSummaryCard";
 import SectionHeader from "@/components/SectionHeader";
 import ShortcutCard from "@/components/ShortcutCard";
-import ItemCard from "@/components/ItemCard";
+import ItemsRow from "@/components/ItemsRow";
+import HorizontalScroller from "@/components/HorizontalScroller";
 import ToastFromQuery from "./ToastFromQuery";
+import { IconLightbulb, IconPlus, IconSwap, IconTrophy } from "@/components/icons";
+
+const DOIS_DIAS_MS = 2 * 24 * 60 * 60 * 1000;
+
+// Fora do corpo do componente: o lint de pureza do React não permite chamar
+// APIs impuras (Date.now) direto no render de um componente/hook.
+function dataLimiteNovidades() {
+  return new Date(Date.now() - DOIS_DIAS_MS);
+}
 
 export default async function HomePage() {
   const user = await requireSession();
 
-  const [itemCount, itens] = await Promise.all([
+  const [itemCount, itens, novidades, vistos] = await Promise.all([
     prisma.item.count({ where: { userId: user.id } }),
     prisma.item.findMany({
-      where: { userId: { not: user.id } },
+      where: { userId: { not: user.id }, status: "DISPONIVEL" },
       orderBy: { createdAt: "desc" },
+    }),
+    prisma.item.findMany({
+      where: {
+        userId: { not: user.id },
+        status: "DISPONIVEL",
+        createdAt: { gte: dataLimiteNovidades() },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    }),
+    prisma.itemView.findMany({
+      where: { userId: user.id },
+      orderBy: { viewedAt: "desc" },
+      take: 10,
+      include: { item: true },
     }),
   ]);
 
@@ -28,55 +52,46 @@ export default async function HomePage() {
         <ToastFromQuery />
       </Suspense>
 
-      <HeaderHome pontos={pontos} />
-
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-4">
         <UserSummaryCard name={user.name} itemCount={itemCount} pontos={pontos} />
 
         <SectionHeader title="Atalhos" />
-        <div className="no-scrollbar mb-[18px] flex gap-2.5 overflow-x-auto pb-1">
+        <HorizontalScroller className="no-scrollbar mb-[18px] flex gap-2.5 overflow-x-auto pb-1">
           <ShortcutCard
             title="Publicar Item"
             xp="+ 50 XP"
-            icon="+"
+            icon={<IconPlus size={16} />}
             href="/items/new"
           />
           <ShortcutCard
             title="Dicas Sustentáveis"
-            xp="🌱"
-            icon="💡"
+            xp="Sustentável"
+            icon={<IconLightbulb size={16} />}
             href="/tips"
           />
-          <ShortcutCard title="Realizar Troca" xp="+ 100 XP" icon="⇄" />
-          <ShortcutCard title="Ranking" xp="+ 20 XP" icon="🏆" />
-        </div>
+          <ShortcutCard
+            title="Realizar Troca"
+            xp="+ 100 XP"
+            icon={<IconSwap size={16} />}
+            href="/trocas"
+          />
+          <ShortcutCard title="Ranking" xp="+ 20 XP" icon={<IconTrophy size={16} />} />
+        </HorizontalScroller>
 
-        <SectionHeader title="Itens para trocar" actionText="Ver todos" />
+        <ItemsRow
+          title="Itens para trocar"
+          itens={itens}
+          actionText="Ver todos"
+          actionHref="/items"
+          emptyMessage="Nenhum item disponível ainda."
+        />
 
-        {itens.length === 0 ? (
-          <div className="items-center px-6 py-6 text-center">
-            <p className="text-sm text-reuse-text-secondary">
-              Nenhum item disponível ainda.
-            </p>
-          </div>
-        ) : (
-          <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
-            {itens.map((item, i) => (
-              <div
-                key={item.id}
-                className="animate-item-in"
-                style={{ animationDelay: `${Math.min(i, 8) * 60}ms` }}
-              >
-                <ItemCard
-                  imagem={item.imagem}
-                  titulo={item.titulo}
-                  descricao={item.descricao}
-                  troca={item.troca}
-                />
-              </div>
-            ))}
-          </div>
-        )}
+        <ItemsRow title="Novidades" itens={novidades} />
+
+        <ItemsRow
+          title="Últimos vistos"
+          itens={vistos.map((v) => v.item)}
+        />
       </div>
     </div>
   );

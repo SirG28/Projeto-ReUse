@@ -50,11 +50,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {message ? (
         <div
-          className={`fixed inset-x-6 bottom-24 z-30 flex justify-center transition-all duration-[220ms] ${
+          className={`fixed inset-x-6 bottom-6 z-30 flex justify-center transition-all duration-[220ms] md:inset-x-auto md:right-6 md:justify-end ${
             visible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
           }`}
         >
-          <div className="max-w-md rounded-xl bg-[#2F2F2F] px-4 py-3 text-center text-sm font-semibold text-white">
+          <div className="max-w-md rounded-xl bg-reuse-text px-4 py-3 text-center text-sm font-semibold text-white">
             {message}
           </div>
         </div>
