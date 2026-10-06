@@ -52,6 +52,7 @@ enum Categoria {
 // solicitação de troca é aceita, saindo do feed/listagens automaticamente.
 enum ItemStatus {
   DISPONIVEL
+  PAUSADO
   TROCADO
 }
 
