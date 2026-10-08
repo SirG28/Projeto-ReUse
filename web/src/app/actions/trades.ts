@@ -1,14 +1,16 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
-export type CreateTradeRequestState = { error?: string; success?: boolean } | undefined;
+export type CreateTradeRequestState =
+  | { error?: string; success?: boolean }
+  | undefined;
 
 export async function createTradeRequestAction(
   _prevState: CreateTradeRequestState,
-  formData: FormData
+  formData: FormData,
 ): Promise<CreateTradeRequestState> {
   const user = await requireSession();
 
@@ -64,7 +66,10 @@ export async function createTradeRequestAction(
   return { success: true };
 }
 
-async function carregarSolicitacaoComoDono(tradeRequestId: string, userId: string) {
+async function carregarSolicitacaoComoDono(
+  tradeRequestId: string,
+  userId: string,
+) {
   const solicitacao = await prisma.tradeRequest.findUnique({
     where: { id: tradeRequestId },
     include: { itemDesejado: true, itemOfertado: true },
@@ -80,12 +85,18 @@ export async function acceptTradeRequestAction(formData: FormData) {
   const user = await requireSession();
   const tradeRequestId = String(formData.get("tradeRequestId") || "");
 
-  const solicitacao = await carregarSolicitacaoComoDono(tradeRequestId, user.id);
+  const solicitacao = await carregarSolicitacaoComoDono(
+    tradeRequestId,
+    user.id,
+  );
   if (!solicitacao) {
     return;
   }
 
-  const idsEnvolvidos = [solicitacao.itemDesejadoId, solicitacao.itemOfertadoId];
+  const idsEnvolvidos = [
+    solicitacao.itemDesejadoId,
+    solicitacao.itemOfertadoId,
+  ];
 
   // O `updateMany` com `status: "PENDENTE"` no where funciona como trava:
   // se dois "Aceitar" chegarem quase juntos para pedidos que compartilham um
@@ -102,7 +113,10 @@ export async function acceptTradeRequestAction(formData: FormData) {
     }
 
     await tx.item.updateMany({
-      where: { id: { in: idsEnvolvidos }, status: "DISPONIVEL" },
+      where: {
+        id: { in: idsEnvolvidos },
+        status: { in: ["DISPONIVEL", "PAUSADO"] },
+      },
       data: { status: "TROCADO" },
     });
 
@@ -143,7 +157,10 @@ export async function declineTradeRequestAction(formData: FormData) {
   const user = await requireSession();
   const tradeRequestId = String(formData.get("tradeRequestId") || "");
 
-  const solicitacao = await carregarSolicitacaoComoDono(tradeRequestId, user.id);
+  const solicitacao = await carregarSolicitacaoComoDono(
+    tradeRequestId,
+    user.id,
+  );
   if (!solicitacao) {
     return;
   }

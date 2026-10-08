@@ -62,7 +62,7 @@ export async function POST(
         });
         if (r.count === 0) return false;
         await tx.item.updateMany({
-          where: { id: { in: ids }, status: "DISPONIVEL" },
+          where: { id: { in: ids }, status: { in: ["DISPONIVEL", "PAUSADO"] } },
           data: { status: "TROCADO" },
         });
         await tx.tradeRequest.updateMany({
