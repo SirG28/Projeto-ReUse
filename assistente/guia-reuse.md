@@ -4,6 +4,12 @@
 
 O ReUse conecta pessoas para trocar itens usados, reduzindo desperdício. Não há dinheiro envolvido: você oferece um item seu em troca de um item de outra pessoa.
 
+## Perguntas frequentes
+
+Posso vender um item no ReUse? Não. O ReUse é só para trocas, sem dinheiro envolvido. Para oferecer um item, publique-o para troca e informe o que você aceita receber em troca.
+
+Posso doar um item? A plataforma não tem opção de doação. Você pode publicar o item para troca e combinar diretamente com a outra pessoa pelo WhatsApp.
+
 ## Criar conta e entrar
 
 1. Acesse a página inicial e clique em "Cadastrar".
@@ -14,7 +20,7 @@ O ReUse conecta pessoas para trocar itens usados, reduzindo desperdício. Não h
 
 1. Na Home, use o atalho "Publicar Item".
 2. Preencha: título, descrição, o que você aceita em troca, categoria, WhatsApp para contato e, se quiser, uma foto.
-3. Título, descrição, troca e WhatsApp são obrigatórios.
+3. Título, descrição, o que você aceita em troca e WhatsApp são obrigatórios, a categoria já vem selecionada e pode ser trocada.
 4. Clique em publicar. O item aparece no seu Perfil e no marketplace para outras pessoas.
 
 ## Encontrar itens
