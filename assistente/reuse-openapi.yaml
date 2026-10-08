@@ -1,0 +1,142 @@
+openapi: 3.0.3
+info:
+  title: ReUse Assistente API
+  version: 1.0.0
+  description: Ações que o assistente virtual pode executar na plataforma ReUse em nome do usuário.
+servers:
+  - url: https://reuse-assistente.vercel.app
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+paths:
+  /api/assistente/meus-itens:
+    get:
+      operationId: listarMeusItens
+      summary: Lista os itens publicados pelo usuário
+      description: Retorna todos os itens do usuário com título, categoria e status (DISPONIVEL, PAUSADO ou TROCADO). Use para descobrir IDs antes de pausar ou reativar itens específicos.
+      responses:
+        "200":
+          description: Lista de itens do usuário
+  /api/assistente/itens:
+    get:
+      operationId: buscarItens
+      summary: Busca itens disponíveis de outras pessoas
+      description: Pesquisa itens disponíveis para troca no marketplace, por palavra-chave e/ou categoria.
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Palavra-chave buscada no título e na descrição
+        - name: categoria
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              [
+                ELETRONICOS,
+                MOVEIS_DECORACAO,
+                ROUPAS_ACESSORIOS,
+                LIVROS_MIDIA,
+                ESPORTE_LAZER,
+                BRINQUEDOS_INFANTIL,
+                ELETRODOMESTICOS,
+                INSTRUMENTOS_MUSICAIS,
+                FERRAMENTAS_JARDIM,
+                OUTROS,
+              ]
+      responses:
+        "200":
+          description: Itens encontrados
+  /api/assistente/itens/pausar:
+    post:
+      operationId: pausarOfertas
+      summary: Pausa ofertas ativas do usuário
+      description: Tira itens do marketplace temporariamente. Sem itemIds, pausa TODAS as ofertas disponíveis do usuário. Peça confirmação antes de chamar.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemIds:
+                  type: array
+                  items:
+                    type: string
+                  description: IDs específicos (opcional)
+      responses:
+        "200":
+          description: Quantidade de itens pausados
+  /api/assistente/itens/reativar:
+    post:
+      operationId: reativarOfertas
+      summary: Reativa ofertas pausadas
+      description: Volta itens pausados para o marketplace. Sem itemIds, reativa todos os pausados. Peça confirmação antes de chamar.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Quantidade de itens reativados
+  /api/assistente/trocas:
+    get:
+      operationId: listarTrocas
+      summary: Lista solicitações de troca
+      description: Lista pedidos de troca recebidos (pelos itens do usuário) ou enviados (feitos pelo usuário), opcionalmente filtrando por status.
+      parameters:
+        - name: tipo
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [recebidas, enviadas]
+            default: recebidas
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [PENDENTE, ACEITA, RECUSADA, CANCELADA]
+      responses:
+        "200":
+          description: Solicitações encontradas
+  /api/assistente/trocas/{id}:
+    post:
+      operationId: responderTroca
+      summary: Aceita, recusa ou cancela uma solicitação de troca
+      description: aceitar/recusar valem para pedidos recebidos; cancelar vale para pedidos enviados. Só funciona com status PENDENTE. Peça confirmação antes de chamar.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [acao]
+              properties:
+                acao:
+                  type: string
+                  enum: [aceitar, recusar, cancelar]
+      responses:
+        "200":
+          description: Ação realizada
