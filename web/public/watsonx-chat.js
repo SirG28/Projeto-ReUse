@@ -1,4 +1,9 @@
 window.wxOConfiguration = {
+  style: {
+    headerColor: "#7aa61c",
+    primaryColor: "#7aa61c",
+    userMessageBackgroundColor: "#dce8c2",
+  },
   orchestrationID:
     "7a303301510c4b2ba69fad4f1540281b_06e38adf-122e-4aa4-84e4-96caaaedc872",
   hostURL: "https://au-syd.watson-orchestrate.cloud.ibm.com",
